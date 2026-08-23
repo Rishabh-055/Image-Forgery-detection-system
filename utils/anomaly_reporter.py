@@ -1,9 +1,9 @@
 """
-utils/anomaly_reporter.py — Forensic Anomaly Description Engine
+utils/anomaly_reporter.py — Image Forgery Anomaly Description Engine
 ================================================================
-Converts raw numeric forensic signals (ELA stats, U-Net probability map,
+Converts raw numeric forgery detection signals (ELA stats, U-Net probability map,
 EXIF metadata) into structured, human-readable anomaly descriptions shown
-inside the dashboard's Forensic Anomaly Report panel.
+inside the dashboard's Image Forgery Detection Report panel.
 
 Each anomaly is a dict:
     {
@@ -49,7 +49,7 @@ def generate_anomaly_report(
     mode:      str,
 ) -> list[dict]:
     """
-    Analyse all available forensic signals and produce a ranked list of
+    Analyse all available forgery detection signals and produce a ranked list of
     human-readable anomaly descriptions.
 
     Parameters
@@ -271,7 +271,7 @@ def generate_anomaly_report(
                     ),
                 })
 
-    # ── 3. Metadata Forensic Findings ─────────────────────────────────────────
+    # ── 3. Metadata Forgery Indicators ─────────────────────────────────────────
     exif         = metadata.get("exif", {})
     has_exif     = metadata.get("has_exif", False)
     sw_field     = exif.get("Software", "")

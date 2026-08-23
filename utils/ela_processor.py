@@ -1,7 +1,7 @@
 """
 utils/ela_processor.py — ELA + Heatmap + Scoring Engine
 =========================================================
-All image-forensics helper functions used by both app.py (Phase 1 heuristics)
+All image forgery detection helper functions used by both app.py (Phase 1 heuristics)
 and the U-Net inference path (Phase 2 heatmap blending).
 
 Functions

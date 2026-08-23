@@ -1,4 +1,4 @@
-# 🔬 ForensicSplicing: Hybrid Image Splicing Detection System
+# 🔬 Image Forgery Detection System: Splicing & Tamper Detector
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-ee4c2c.svg)](https://pytorch.org/)
@@ -6,7 +6,7 @@
 [![OpenCV](https://img.shields.io/badge/OpenCV-4.8%2B-green.svg)](https://opencv.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-An academic and forensic-grade digital image tamper detection suite implementing a **hybrid two-phase framework**:
+An academic and production-ready digital image tamper and forgery detection suite implementing a **hybrid two-phase framework**:
 1. **Phase 1 — Heuristic Error Level Analysis (ELA)**: Compression anomaly detection and statistical DCT residual scoring.
 2. **Phase 2 — Deep Learning U-Net Segmentation**: End-to-end convolutional neural network producing pixel-precise tamper masks and thermal overlays trained on **CASIA v1/v2** benchmark protocols.
 
@@ -19,7 +19,7 @@ An academic and forensic-grade digital image tamper detection suite implementing
 - [How the System Works (Step-by-Step)](#-how-the-system-works-step-by-step)
 - [How the Model Works (Deep Dive)](#-how-the-model-works-deep-dive)
 - [Project Structure](#-project-structure)
-- [Theoretical & Forensic Methodology](#-theoretical--forensic-methodology)
+- [Theoretical & Forgery Detection Methodology](#-theoretical--forgery-detection-methodology)
 - [Dataset Preparation (CASIA Protocol)](#-dataset-preparation-casia-protocol)
 - [Installation & Local Setup](#-installation--local-setup)
 - [Usage Guide](#-usage-guide)
@@ -38,7 +38,7 @@ An academic and forensic-grade digital image tamper detection suite implementing
 Digital image splicing—copying a region from a donor image and pasting it onto a host image—introduces subtle boundary discrepancies, quantization mismatches, and noise inconsistencies. 
 
 This project provides a complete, runnable solution comprising:
-* **Interactive Forensic Dashboard**: Built on Streamlit with a high-contrast **Forensic Precision** laboratory UI (`#101319` canvas, `#00FFFF` cyan accents, `#FF4B4B` danger alerts).
+* **Interactive Forgery Detection Dashboard**: Built on Streamlit with a high-contrast modern laboratory UI (`#101319` canvas, `#00FFFF` cyan accents, `#FF4B4B` danger alerts).
 * **Dual Detection Modes**: Real-time switching between fast ELA heuristics and deep-learning U-Net segmentation.
 * **Pixel-Level Heatmap Blending**: OpenCV `COLORMAP_JET` thermal overlays highlighting exact tamper coordinates.
 * **Full Training Pipeline**: Standalone PyTorch dataset loaders, `CombinedBCEDiceLoss`, and training loop.
@@ -86,9 +86,9 @@ flowchart TD
 
 * **Side-by-Side Comparative Workbench**: Displays original source image directly beside the generated heatmap overlay.
 * **Dual-Engine Detection**:
-  * **ELA Engine**: Rapid, calibration-free forensic analysis based on differential compression residuals.
+  * **ELA Engine**: Rapid, calibration-free tamper analysis based on differential compression residuals.
   * **U-Net Engine**: Multi-scale feature extraction with skip connections to localize semantic and textural manipulation boundaries.
-* **Forensic Precision Theme**: Designed following clinical laboratory ergonomics (Inter font for UI, JetBrains Mono for telemetry).
+* **Modern Precision Theme**: Designed following clinical laboratory ergonomics (Inter font for UI, JetBrains Mono for telemetry).
 * **Robust EXIF Parser**: Inspects camera models, capture timestamps, and detects metadata markers from editing suites (Photoshop, GIMP, Lightroom, Canva).
 * **Hardened Security**: Protected against arbitrary code execution via PyTorch deserialization (`weights_only=True`), HTML injection (XSS sanitization), and memory exhaustion guards.
 
@@ -112,7 +112,7 @@ PIL.Image → EXIF tags → parse camera, software, GPS, timestamps
 ```
 * Pillow's `_getexif()` reads all embedded EXIF tags.
 * The system flags known editing-software markers (Photoshop, GIMP, Lightroom, Canva, CorelDRAW).
-* Missing timestamps, mismatched camera models, and absent GPS data are noted as forensic soft-indicators.
+* Missing timestamps, mismatched camera models, and absent GPS data are noted as tampering soft-indicators.
 * Results render in the **Metadata Anomaly Table** below the visual panels.
 
 ### Step 3A — Phase 1: ELA Heuristic Analysis (`utils/ela_processor.py`)
@@ -270,7 +270,7 @@ college project/
 
 ---
 
-## 🔬 Theoretical & Forensic Methodology
+## 🔬 Theoretical & Forgery Detection Methodology
 
 ### 1. Error Level Analysis (ELA)
 
@@ -449,13 +449,13 @@ This project focuses on splicing detection because it is harder to detect (no se
 
 ### Q10. What is the role of JPEG quality factor in ELA?
 
-**Answer**: The JPEG quality factor (Q) controls the quantization step in DCT compression. A lower Q means coarser quantization and more lossy compression. In ELA, the choice of the re-compression quality (Q=90 by default) is critical: it should be close to — but not identical to — the image's original save quality. If Q is too low, the residual differences are dominated by the re-compression artifacts rather than the original splice boundaries. If Q is too high, the differences are too small to be meaningful. Q=90 is a standard forensic convention that balances sensitivity to authentic-image equilibrium vs. splice-region anomalies. The amplification factor (α=20) scales the small differences to human-visible brightness levels.
+**Answer**: The JPEG quality factor (Q) controls the quantization step in DCT compression. A lower Q means coarser quantization and more lossy compression. In ELA, the choice of the re-compression quality (Q=90 by default) is critical: it should be close to — but not identical to — the image's original save quality. If Q is too low, the residual differences are dominated by the re-compression artifacts rather than the original splice boundaries. If Q is too high, the differences are too small to be meaningful. Q=90 is a standard detection convention that balances sensitivity to authentic-image equilibrium vs. splice-region anomalies. The amplification factor (α=20) scales the small differences to human-visible brightness levels.
 
 ---
 
 ### Q11. How does the system handle EXIF metadata analysis?
 
-**Answer**: EXIF (Exchangeable Image File Format) metadata is embedded by camera firmware during capture and records information like camera make/model, focal length, GPS coordinates, capture timestamp, and software modifications. The `utils/metadata.py` module extracts all available EXIF tags using Pillow's internal parser. It flags several forensic indicators: (1) **Software tags** from editing suites (Adobe Photoshop, GIMP, Lightroom) indicating post-processing. (2) **Missing GPS data** on images that claim to be from GPS-capable cameras. (3) **Timestamp inconsistencies** between file creation time and embedded EXIF time. (4) **Stripped metadata** — the complete absence of EXIF can indicate a deliberate attempt to hide editing history. These are treated as soft indicators that complement the ELA and U-Net analysis.
+**Answer**: EXIF (Exchangeable Image File Format) metadata is embedded by camera firmware during capture and records information like camera make/model, focal length, GPS coordinates, capture timestamp, and software modifications. The `utils/metadata.py` module extracts all available EXIF tags using Pillow's internal parser. It flags several forgery indicators: (1) **Software tags** from editing suites (Adobe Photoshop, GIMP, Lightroom) indicating post-processing. (2) **Missing GPS data** on images that claim to be from GPS-capable cameras. (3) **Timestamp inconsistencies** between file creation time and embedded EXIF time. (4) **Stripped metadata** — the complete absence of EXIF can indicate a deliberate attempt to hide editing history. These are treated as soft indicators that complement the ELA and U-Net analysis.
 
 ---
 
@@ -485,7 +485,7 @@ This project focuses on splicing detection because it is harder to detect (no se
 
 **Answer**: Several improvements would be needed for production:
 1. **More training data**: Train on full CASIA v2.0 (~12,000 images) and MICC-F220 for better generalization. Current training used 100 synthetic samples.
-2. **Better architecture**: Replace the baseline U-Net with MantraNet, MVSS-Net, or CAT-Net — architectures specifically designed for image forensics that incorporate frequency domain features.
+2. **Better architecture**: Replace the baseline U-Net with MantraNet, MVSS-Net, or CAT-Net — architectures specifically designed for image forgery detection that incorporate frequency domain features.
 3. **Adversarial robustness**: Apply JPEG quality randomization and color jitter augmentation during training to handle WhatsApp/social-media recompression.
 4. **Ensemble detection**: Combine ELA score, U-Net mask, noise-level analysis, and camera fingerprint (PRNU) into a Bayesian ensemble for more reliable verdicts.
 5. **GPU inference**: Deploy with CUDA to reduce inference time from ~400ms to <20ms.
@@ -503,7 +503,7 @@ This project focuses on splicing detection because it is harder to detect (no se
 
 **Answer**:
 - **Image-level detection**: A binary classifier that outputs a single label (authentic / forged) for the whole image. Simpler but provides no spatial information about where the forgery occurred. Used in early approaches (SVM on ELA features, CNN classifiers).
-- **Pixel-level detection (segmentation/localization)**: A model that outputs a binary mask with the same spatial dimensions as the input image, labeling each pixel as authentic or tampered. More forensically useful because it points to the exact tampered region, helping investigators understand what was altered. Our U-Net performs pixel-level detection, which is required for any practical forensic workflow.
+- **Pixel-level detection (segmentation/localization)**: A model that outputs a binary mask with the same spatial dimensions as the input image, labeling each pixel as authentic or tampered. More practically useful because it points to the exact tampered region, helping users understand what was altered. Our U-Net performs pixel-level detection, which is required for any practical tamper detection workflow.
 
 ---
 
@@ -513,15 +513,15 @@ This project focuses on splicing detection because it is harder to detect (no se
 
 ---
 
-### Q19. How does the heatmap colormap convey forensic information?
+### Q19. How does the heatmap colormap convey tamper information?
 
-**Answer**: The heatmap uses OpenCV's `COLORMAP_JET` which maps scalar values to colors in this order: **Blue (low) → Cyan → Green → Yellow → Red (high)**. In the context of forensics: **Cool blue** regions indicate low-anomaly areas (authentic, compression-equilibrium regions). **Warm yellow/orange** regions suggest moderate anomalies worth investigating. **Bright red** regions indicate high-confidence tampered zones where the ELA residual or U-Net probability is significantly elevated. The heatmap is blended over the original image at 45–55% opacity using `cv2.addWeighted()` so users can simultaneously see the original content and the forensic overlay, making it easy to correlate detected anomalies with actual image objects.
+**Answer**: The heatmap uses OpenCV's `COLORMAP_JET` which maps scalar values to colors in this order: **Blue (low) → Cyan → Green → Yellow → Red (high)**. In the context of forgery detection: **Cool blue** regions indicate low-anomaly areas (authentic, compression-equilibrium regions). **Warm yellow/orange** regions suggest moderate anomalies worth investigating. **Bright red** regions indicate high-confidence tampered zones where the ELA residual or U-Net probability is significantly elevated. The heatmap is blended over the original image at 45–55% opacity using `cv2.addWeighted()` so users can simultaneously see the original content and the tamper overlay, making it easy to correlate detected anomalies with actual image objects.
 
 ---
 
 ### Q20. What is the difference between this project's heuristic and deep learning modes?
 
-**Answer**: The two modes represent fundamentally different forensic philosophies:
+**Answer**: The two modes represent fundamentally different detection philosophies:
 
 | Property | Phase 1: ELA (Heuristic) | Phase 2: U-Net (Deep Learning) |
 |---|---|---|
@@ -533,7 +533,7 @@ This project focuses on splicing detection because it is harder to detect (no se
 | **Generalisation** | Consistent across image types | Depends on training distribution |
 | **Pixel-level masks** | Indirect (ELA brightness) | Direct (per-pixel probability) |
 
-In practice, the best forensic conclusion is reached by running both modes and checking for agreement — if both ELA and U-Net flag the same spatial region, confidence in a splice is high.
+In practice, the best conclusion is reached by running both modes and checking for agreement — if both ELA and U-Net flag the same spatial region, confidence in a splice is high.
 
 ---
 

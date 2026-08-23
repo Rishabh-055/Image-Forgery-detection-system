@@ -104,7 +104,7 @@ def compute_other_signals_score(
     noise_stats: dict,
 ) -> tuple:
     """
-    Compute miscellaneous image forensics signals (0–10 points).
+    Compute miscellaneous image forgery signals (0–10 points).
 
     Signals:
       - Unusual aspect ratio

@@ -1,7 +1,7 @@
 """
-app.py — ForensicSplicing: Image Splicing Detection System
+app.py —Image Forgery Detection System
 ===========================================================
-Streamlit web application implementing two forensic detection modes:
+Streamlit web application implementing two image forgery detection modes:
 
   Phase 1 — Heuristic (ELA)
       Uses Error Level Analysis to highlight regions with anomalous
@@ -13,7 +13,7 @@ Streamlit web application implementing two forensic detection modes:
       inference to produce a probability mask, which is rendered as a
       colour heatmap overlay. Falls back to ELA if weights are missing.
 
-UI Design: Forensic Precision dark theme — charcoal backgrounds, Forensic
+UI Design: Modern precision dark theme — charcoal backgrounds,
 Cyan (#00FFFF) accents, Danger Red (#FF4B4B) alerts, Inter + JetBrains Mono.
 
 Run:
@@ -23,13 +23,14 @@ Run:
 import io
 import time
 import traceback
+from typing import Optional
 import numpy as np
 import streamlit as st
 from PIL import Image
 
 # ── Page config (MUST be the very first Streamlit call) ───────────────────────
 st.set_page_config(
-    page_title="ForensicSplicing | Image Tamper Detection",
+    page_title="Image Forgery Detection",
     page_icon="🔬",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -48,12 +49,12 @@ from utils.anomaly_reporter import generate_anomaly_report, format_anomaly_html
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Custom CSS — Forensic Precision Theme
-# (matches DESIGN.md spec: #101319 background, #00FFFF cyan, #FF4B4B danger red,
+# Custom CSS — Precision Dark Theme
+# (matches design spec: #101319 background, #00FFFF cyan, #FF4B4B danger red,
 #  Inter UI font, JetBrains Mono data font, sharp 0px radius)
 # ─────────────────────────────────────────────────────────────────────────────
 
-FORENSIC_CSS = """
+FORGERY_DETECTION_CSS = """
 <style>
 /* ── Google Fonts ── */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
@@ -405,7 +406,7 @@ hr { border-color: var(--border) !important; margin: 16px 0 !important; }
 .opacity-label { font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
 </style>
 """
-st.markdown(FORENSIC_CSS, unsafe_allow_html=True)
+st.markdown(FORGERY_DETECTION_CSS, unsafe_allow_html=True)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -622,7 +623,7 @@ def _render_sidebar():
             </div>
             <div style="font-family:'JetBrains Mono',monospace; font-size:0.68rem;
                         color:#839493; letter-spacing:0.08em; text-transform:uppercase; margin-top:2px;">
-                V2.4.0 Forensic Suite
+                V2.4.0 Image Forgery Detection Suite
             </div>
         </div>
         <hr>
@@ -740,7 +741,7 @@ def _render_header(mode: str) -> None:
         <div style="flex:1; display:flex; align-items:center; gap:16px;">
             <div>
                 <div style="font-size:1.55rem; font-weight:700; color:#e1e2eb; letter-spacing:-0.5px; line-height:1.1;">
-                    Forensic<br><span style="color:#00FFFF;">Analyzer</span>
+                    Image Forgery<br><span style="color:#00FFFF;">Detector</span>
                 </div>
             </div>
             <div style="display:flex; gap:8px; align-items:center; margin-left:20px;">
@@ -764,9 +765,9 @@ def _render_welcome() -> None:
     st.markdown("""
     <div class="welcome-card">
         <div class="welcome-icon">🔬</div>
-        <div class="welcome-title">No Evidence Loaded</div>
+        <div class="welcome-title">No Image Loaded</div>
         <div class="welcome-sub">
-            Upload a JPG, PNG, or WEBP image via the sidebar to begin forensic analysis.<br><br>
+            Upload a JPG, PNG, or WEBP image via the sidebar to begin image forgery detection.<br><br>
             <b style="color:#00FFFF">Phase 1 — Heuristic (ELA)</b><br>
             Error Level Analysis highlights compression anomalies.<br><br>
             <b style="color:#a855f7">Phase 2 — Deep Learning (U-Net)</b><br>
@@ -789,9 +790,9 @@ def _render_results(
     metadata:     dict,
     log_entries:  list,
     mode:         str,
-    unet_prob:    np.ndarray = None,
+    unet_prob:    Optional[np.ndarray] = None,
 ) -> None:
-    """Render the full forensic dashboard after analysis."""
+    """Render the full forgery detection dashboard after analysis."""
 
     val_cls, sub_cls, _ = _score_css(score)
     is_danger   = score > 50
@@ -903,7 +904,7 @@ def _render_results(
                 </div>
                 """, unsafe_allow_html=True)
 
-    # ── Forensic Anomaly Report ───────────────────────────────────────────────
+    # ── Image Forgery Detection Report ───────────────────────────────────────────────
     unet_prob_for_report = unet_prob if (unet_prob is not None and unet_prob is not False) else None
     findings = generate_anomaly_report(
         ela_stats=ela_stats,
@@ -918,17 +919,17 @@ def _render_results(
     clear_count    = sum(1 for f in findings if f["level"] == "CLEAR")
 
     report_label = (
-        f"🔴 Forensic Anomaly Report — {critical_count} Critical · {warning_count} Warnings · {clear_count} Clear"
+        f"🔴 Image Forgery Detection Report — {critical_count} Critical · {warning_count} Warnings · {clear_count} Clear"
         if critical_count > 0
-        else f"🟡 Forensic Anomaly Report — {warning_count} Warnings · {clear_count} Clear"
+        else f"🟡 Image Forgery Detection Report — {warning_count} Warnings · {clear_count} Clear"
         if warning_count > 0
-        else f"🟢 Forensic Anomaly Report — No Critical Findings"
+        else f"🟢 Image Forgery Detection Report — No Critical Findings"
     )
 
     with st.expander(report_label, expanded=True):
         st.markdown(
             "<p style='color:#8A9BB5; font-size:0.82rem; margin-bottom:12px;'>"
-            "Each finding below describes a specific forensic indicator detected in the image. "
+            "Each finding below describes a specific image forgery indicator detected in the image. "
             "Severity levels: "
             "<b style='color:#FF4B4B;'>CRITICAL</b> — strong evidence of manipulation · "
             "<b style='color:#FFA500;'>WARNING</b> — suspicious signal requiring context · "
@@ -941,13 +942,13 @@ def _render_results(
 
     # ── Verdict banner ────────────────────────────────────────────────────────
     if is_danger:
-        st.error(f"🚨 VERDICT: IMAGE CLASSIFIED AS **SPLICED** — Score {score}/100. Significant forensic indicators detected.")
+        st.error(f"🚨 VERDICT: IMAGE CLASSIFIED AS **SPLICED** — Score {score}/100. Significant forgery indicators detected.")
     elif is_warn:
-        st.warning(f"⚠️ VERDICT: **SUSPICIOUS** — Score {score}/100. Some forensic signals present; further investigation recommended.")
+        st.warning(f"⚠️ VERDICT: **SUSPICIOUS** — Score {score}/100. Some forgery signals present; further investigation recommended.")
     else:
-        st.success(f"✅ VERDICT: **AUTHENTIC** — Score {score}/100. No significant forensic anomalies detected.")
+        st.success(f"✅ VERDICT: **AUTHENTIC** — Score {score}/100. No significant forgery anomalies detected.")
 
-    st.caption("🔬 Forensic Analysis System — Phase 1 (Heuristic ELA) & Phase 2 (Deep Learning U-Net) active. "
+    st.caption("🔬 Image Forgery Detection System — Phase 1 (Heuristic ELA) & Phase 2 (Deep Learning U-Net) active. "
                "Trained on CASIA-standard image tampering dataset.")
 
 
@@ -1048,7 +1049,7 @@ def main() -> None:
 
     # ── Run or use cached ─────────────────────────────────────────────────────
     if run_analysis:
-        with st.spinner("🔬 Initialising forensic analysis pipeline…"):
+        with st.spinner("🔬 Initialising forgery detecting analysis pipeline…"):
             try:
                 log_entries: list = []
                 unet_prob = None

@@ -1,5 +1,5 @@
 """
-test_app_e2e.py — Full End-to-End System Test for ForensicSplicing
+test_app_e2e.py — Full End-to-End System Test for Image Forgery Detection
 ==================================================================
 Tests both Phase 1 (Heuristic ELA) and Phase 2 (Deep Learning U-Net)
 pipelines on authentic, donor, and spliced images to verify all
@@ -28,7 +28,7 @@ from utils.metadata import extract_metadata
 
 def run_e2e_verification():
     print("=" * 60)
-    print("      FORENSICSPLICING: FULL SYSTEM TEST")
+    print("      IMAGE FORGERY DETECTION: FULL SYSTEM TEST")
     print("=" * 60)
 
     # 1. Check Weights file
