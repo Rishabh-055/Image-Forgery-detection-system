@@ -1,0 +1,59 @@
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import DataLoader, Dataset
+from torchvision import transforms
+from model import UNet
+import os
+
+# Placeholder for custom Dataset
+class SplicingDataset(Dataset):
+    def __init__(self, image_dir, mask_dir, transform=None):
+        self.image_dir = image_dir
+        self.mask_dir = mask_dir
+        self.images = os.listdir(image_dir)
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.images)
+
+    def __getitem__(self, idx):
+        # Implementation for loading image and mask pairs
+        pass
+
+def train():
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    
+    # Hyperparameters
+    LR = 1e-4
+    BATCH_SIZE = 8
+    EPOCHS = 20
+
+    model = UNet().to(device)
+    optimizer = optim.Adam(model.parameters(), lr=LR)
+    criterion = nn.BCEWithLogitsLoss()
+
+    # Training Loop
+    print(f"Starting training on {device}...")
+    for epoch in range(EPOCHS):
+        model.train()
+        # for batch_idx, (data, targets) in enumerate(train_loader):
+        #     data = data.to(device)
+        #     targets = targets.float().unsqueeze(1).to(device)
+        #     
+        #     # Forward
+        #     predictions = model(data)
+        #     loss = criterion(predictions, targets)
+        #     
+        #     # Backward
+        #     optimizer.zero_grad()
+        #     loss.backward()
+        #     optimizer.step()
+        print(f"Epoch {epoch+1}/{EPOCHS} completed.")
+
+    torch.save(model.state_dict(), "unet_splicing_model.pth")
+    print("Model saved to unet_splicing_model.pth")
+
+if __name__ == "__main__":
+    # train()
+    print("Training script ready. Define dataset paths to run.")

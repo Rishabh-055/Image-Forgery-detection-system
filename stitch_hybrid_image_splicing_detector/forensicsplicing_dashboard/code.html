@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Forensic Analyzer - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-lowest": "#0b0e14",
+                      "on-error-container": "#ffdad6",
+                      "error": "#ffb4ab",
+                      "on-error": "#690005",
+                      "inverse-on-surface": "#2e3037",
+                      "surface-bright": "#363940",
+                      "background": "#101319",
+                      "primary-fixed": "#00fbfb",
+                      "on-secondary": "#68000b",
+                      "outline-variant": "#3a4a49",
+                      "primary-container": "#00fbfb",
+                      "surface": "#101319",
+                      "on-primary-fixed": "#002020",
+                      "secondary-fixed": "#ffdad7",
+                      "on-primary": "#003737",
+                      "secondary-container": "#ad031a",
+                      "on-secondary-container": "#ffb8b2",
+                      "on-tertiary": "#003739",
+                      "surface-variant": "#32353c",
+                      "secondary": "#ffb3ae",
+                      "surface-tint": "#00dddd",
+                      "outline": "#839493",
+                      "on-background": "#e1e2eb",
+                      "on-surface-variant": "#b9cac9",
+                      "primary": "#ffffff",
+                      "surface-container-high": "#272a31",
+                      "on-secondary-fixed-variant": "#930014",
+                      "tertiary-fixed": "#79f5fb",
+                      "on-tertiary-fixed-variant": "#004f52",
+                      "tertiary": "#ffffff",
+                      "secondary-fixed-dim": "#ffb3ae",
+                      "surface-container-low": "#191c22",
+                      "on-tertiary-fixed": "#002021",
+                      "on-primary-container": "#007070",
+                      "surface-dim": "#101319",
+                      "tertiary-container": "#79f5fb",
+                      "on-surface": "#e1e2eb",
+                      "surface-container": "#1d2026",
+                      "on-secondary-fixed": "#410004",
+                      "inverse-primary": "#006a6a",
+                      "error-container": "#93000a",
+                      "on-tertiary-container": "#007074",
+                      "inverse-surface": "#e1e2eb",
+                      "on-primary-fixed-variant": "#004f4f",
+                      "primary-fixed-dim": "#00dddd",
+                      "tertiary-fixed-dim": "#59d8de",
+                      "surface-container-highest": "#32353c"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-md": "32px",
+                      "unit": "4px",
+                      "gutter": "16px",
+                      "margin-sm": "16px",
+                      "margin-lg": "48px",
+                      "comparison-gap": "2px"
+              },
+              "fontFamily": {
+                      "label-caps": [
+                              "JetBrains Mono"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Inter"
+                      ],
+                      "data-mono": [
+                              "JetBrains Mono"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "1",
+                                      "letterSpacing": "0.1em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "data-mono": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        /* Base styles from guidance */
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-surface');
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Custom Scrollbar for technical feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: theme('colors.surface-container-lowest');
+        }
+        ::-webkit-scrollbar-thumb {
+            background: theme('colors.outline-variant');
+            border-radius: 0px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: theme('colors.primary-fixed');
+        }
+
+        /* JET Colormap gradient for heatmaps and meters */
+        .jet-colormap {
+            background: linear-gradient(to right, #000080, #0000ff, #00ffff, #ffff00, #ff0000, #800000);
+        }
+
+        /* Scanline effect for images */
+        .scanline-overlay {
+            background: linear-gradient(
+                to bottom,
+                transparent 50%,
+                rgba(0, 251, 251, 0.05) 51%
+            );
+            background-size: 100% 4px;
+        }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden antialiased selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-full w-[320px] bg-surface-container-low border-r border-outline-variant flex flex-col z-50">
+<!-- Header -->
+<div class="p-6 border-b border-outline-variant">
+<h1 class="text-headline-md font-headline-md font-bold text-primary tracking-tight">SplicingDetection</h1>
+<p class="text-data-mono font-data-mono text-on-surface-variant mt-2">V2.4.0 Forensic Suite</p>
+</div>
+<!-- Navigation Tabs -->
+<div class="flex-1 overflow-y-auto py-4">
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="upload_file">upload_file</span>
+<span class="text-body-md font-body-md">Upload</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="dataset">dataset</span>
+<span class="text-body-md font-body-md">Metadata</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container border-l-4 border-primary-fixed opacity-90 transition-opacity duration-100" href="#">
+<span class="material-symbols-outlined" data-icon="analytics" style="font-variation-settings: 'FILL' 1;">analytics</span>
+<span class="text-body-md font-body-md font-semibold">ELA Analysis</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="biotech">biotech</span>
+<span class="text-body-md font-body-md">U-Net Results</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+<span class="text-body-md font-body-md">Technical Logs</span>
+</a>
+</li>
+</ul>
+</div>
+<!-- CTA & Footer -->
+<div class="p-6 border-t border-outline-variant mt-auto">
+<button class="w-full bg-primary-fixed text-on-primary-fixed font-data-mono text-data-mono py-3 px-4 border border-primary-fixed hover:bg-transparent hover:text-primary-fixed transition-colors flex items-center justify-center gap-2 mb-6">
+<span class="material-symbols-outlined" data-icon="play_arrow">play_arrow</span>
+                Run Deep Scan
+            </button>
+<ul class="space-y-2">
+<li>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary-fixed transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-label-caps font-label-caps">Settings</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary-fixed transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="text-label-caps font-label-caps">Support</span>
+</a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="ml-[320px] w-full flex flex-col h-full bg-background relative">
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 w-[calc(100%-320px)] h-16 bg-surface-container-lowest border-b border-outline-variant flex justify-between items-center px-gutter z-40">
+<div class="flex items-center gap-8">
+<span class="text-headline-md font-headline-md font-black text-primary-fixed">Forensic Analyzer</span>
+<nav class="hidden md:flex gap-6 h-16 items-end">
+<a class="text-primary-fixed border-b-2 border-primary-fixed pb-4 text-label-caps font-label-caps scale-95 duration-100" href="#">Dashboard</a>
+<a class="text-on-surface-variant hover:text-on-surface pb-4 text-label-caps font-label-caps transition-all duration-200" href="#">Comparison</a>
+<a class="text-on-surface-variant hover:text-on-surface pb-4 text-label-caps font-label-caps transition-all duration-200" href="#">Export Report</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="bg-surface-container text-data-mono font-data-mono text-on-surface border border-outline-variant focus:border-primary-fixed focus:ring-1 focus:ring-primary-fixed outline-none py-1.5 pl-9 pr-4 w-64 rounded-none placeholder:text-on-surface-variant/50" placeholder="Search analysis IDs..." type="text"/>
+</div>
+<div class="flex items-center gap-2 border-l border-outline-variant pl-4 ml-2">
+<button class="text-on-surface-variant hover:text-primary-fixed transition-colors p-1">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary-fixed transition-colors p-1">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<button class="ml-2 bg-surface border border-primary-fixed text-primary-fixed font-data-mono text-data-mono px-4 py-1.5 hover:bg-primary-fixed hover:text-on-primary-fixed transition-colors flex items-center gap-2">
+                        Execute Analysis
+                    </button>
+<img alt="User Avatar" class="w-8 h-8 ml-2 border border-outline-variant" data-alt="A highly detailed close-up of a high-tech robotic eye or glowing blue sensor serving as an avatar in a dark, clinical digital forensics laboratory interface. The lighting is cold and precise, emphasizing a modern, analytical aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgwMhNj9NZfU-hnzb8YAIvvtaNabGvMKqrPd4EfEodhePtrg5RkXSRcMjGg6H2f5Wav4MZB9AKGZmA9uJDcg-9BwE0MTG9X4tS76M8xvRrg-SWd85X2KcMxH5csjcmlf0HrvCkps5zwEQ6EVQ6ouQnzAJc4epMJBUWHBsAojIOSQ-_cT3eUmCFBO6566UOOXzKqT0U4xzLlHEWVKcNXCZLqaKsuUy_1r_GevyqUBChx6rLeXOleXmsyg"/>
+</div>
+</div>
+</header>
+<!-- Canvas Area -->
+<main class="flex-1 mt-16 overflow-y-auto p-gutter xl:p-margin-md flex flex-col gap-margin-sm">
+<!-- Dashboard Top: Forgery Score & Quick Stats -->
+<section class="grid grid-cols-1 lg:grid-cols-4 gap-margin-sm">
+<!-- Main Score Card -->
+<div class="lg:col-span-2 bg-surface-container border border-outline-variant p-6 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl text-error">warning</span>
+</div>
+<h2 class="text-label-caps font-label-caps text-on-surface-variant mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">donut_large</span>
+                        GLOBAL FORGERY SCORE
+                    </h2>
+<div class="flex items-end gap-4 mb-4">
+<span class="text-headline-lg font-headline-lg text-error">87.4%</span>
+<span class="text-data-mono font-data-mono text-on-surface-variant mb-1">HIGH PROBABILITY</span>
+</div>
+<!-- Segmented Bar -->
+<div class="h-2 w-full flex gap-1">
+<div class="h-full flex-1 bg-primary-fixed"></div>
+<div class="h-full flex-1 bg-primary-fixed"></div>
+<div class="h-full flex-1 bg-primary-fixed"></div>
+<div class="h-full flex-1 bg-warning" style="background-color: #ffff00;"></div>
+<div class="h-full flex-1 bg-error"></div>
+<div class="h-full flex-1 bg-error"></div>
+<div class="h-full flex-1 bg-surface-variant"></div>
+<div class="h-full flex-1 bg-surface-variant"></div>
+</div>
+</div>
+<!-- Secondary Stats -->
+<div class="bg-surface-container border border-outline-variant p-6 flex flex-col justify-between">
+<h3 class="text-label-caps font-label-caps text-on-surface-variant mb-2">ELA PEAK LUMINANCE</h3>
+<div class="text-headline-md font-headline-md text-primary">243.1</div>
+<div class="text-data-mono font-data-mono text-primary-fixed mt-2">+14% variance</div>
+</div>
+<div class="bg-surface-container border border-outline-variant p-6 flex flex-col justify-between">
+<h3 class="text-label-caps font-label-caps text-on-surface-variant mb-2">U-NET CONFIDENCE</h3>
+<div class="text-headline-md font-headline-md text-primary">0.92</div>
+<div class="text-data-mono font-data-mono text-error mt-2">Anomaly Detected</div>
+</div>
+</section>
+<!-- Main Comparison Area -->
+<section class="flex-1 grid grid-cols-1 xl:grid-cols-2 gap-comparison-gap min-h-[500px]">
+<!-- Original Image Panel -->
+<div class="bg-surface-container-high border border-outline-variant flex flex-col relative">
+<div class="p-2 border-b border-outline-variant flex justify-between items-center bg-surface-container">
+<span class="text-data-mono font-data-mono text-primary-fixed">SOURCE_IMG_001.JPG</span>
+<div class="flex gap-2">
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-sm">zoom_in</span></button>
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-sm">open_in_full</span></button>
+</div>
+</div>
+<div class="flex-1 relative overflow-hidden flex items-center justify-center p-4">
+<div class="relative w-full h-full max-w-2xl mx-auto border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A highly detailed forensic photograph of a modern city street at night, analyzed in a dark digital forensics UI. The image is crisp but showing subtle signs of manipulation. Cold, clinical lighting, high contrast, cyberpunk technical aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXvk8EzZRCHsy0mUxphs8L-i10rTNjqCkt3bibeml_TdFPFG9wTGtNqh5TveDJMs8oldGr7BRMWhk08lOblvOhCKFH7vOFokmuMDG2yfguZLQ4BDkI_SQQF0MWN7K6L3GpXa5pKvMRW_bb3gAH4kz2miNVf11UdBvSEoCBBjk_dke03AdNYEaSYUeteo9brM8p1-9y2KFLo5v44ccOdJGjWtA3Amsw-KLTP5ZmMo6L2cEy5NGeg622IA"/>
+<div class="absolute inset-0 scanline-overlay pointer-events-none"></div>
+</div>
+</div>
+</div>
+<!-- Analysis Heatmap Panel -->
+<div class="bg-surface-container-high border border-outline-variant flex flex-col relative">
+<div class="p-2 border-b border-outline-variant flex justify-between items-center bg-surface-container">
+<span class="text-data-mono font-data-mono text-error">ELA_HEATMAP_OVERLAY</span>
+<div class="flex items-center gap-4">
+<span class="text-label-caps font-label-caps text-on-surface-variant">OPACITY</span>
+<input class="w-24 accent-primary-fixed h-1 bg-surface-variant rounded-none outline-none appearance-none" max="100" min="0" type="range" value="70"/>
+</div>
+</div>
+<div class="flex-1 relative overflow-hidden flex items-center justify-center p-4">
+<div class="relative w-full h-full max-w-2xl mx-auto border border-primary-fixed group">
+<img class="w-full h-full object-cover" data-alt="The exact same detailed forensic photograph of a modern city street at night, but heavily overlaid with a thermal-style JET colormap heatmap (deep blue to intense red). Bright red hotspots clearly indicate manipulated areas. Dark, clinical digital forensics laboratory context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCH3qaUIoI2bzRtVlM272lXzbYwAwaI2JLHIdkzfaJ2RkqwI1MXwsoUsBdgP_IXQzEpJChhDt8PZ39Y7ILcdyxrCnxgY__FiISA-Pe1j1sHw3Ems1fBdBsgw0Bpfx7MQr4hEW7ZLrqSxCNCNyfqR7TmSYfn9wRaWNy51QSo2uOBYONLVBu6R7r7ml0scuQw6BOWjltKHLJZM1SQVjBCExAqgAZs1u3hFGs03F7fQ4r1ZG2fTg5W4CFwA"/>
+<div class="absolute inset-0 bg-black/40 mix-blend-overlay"></div>
+<!-- Simulated Heatmap overlay -->
+<div class="absolute inset-0 jet-colormap opacity-40 mix-blend-multiply"></div>
+<!-- Targeting Reticle -->
+<div class="absolute top-1/3 right-1/4 w-16 h-16 border-2 border-error border-dashed rounded-none pointer-events-none animate-pulse"></div>
+</div>
+</div>
+<!-- Color Scale Legend -->
+<div class="absolute bottom-6 right-6 left-6 p-2 bg-surface-container/90 border border-outline-variant backdrop-blur-sm flex items-center gap-4">
+<span class="text-label-caps font-label-caps text-on-surface-variant w-8">LOW</span>
+<div class="h-2 flex-1 jet-colormap"></div>
+<span class="text-label-caps font-label-caps text-error w-8 text-right">HIGH</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Technical Footer Logs -->
+<footer class="h-48 border-t border-outline-variant bg-surface-container-lowest flex flex-col">
+<div class="px-4 py-1 border-b border-outline-variant bg-surface-container flex justify-between items-center">
+<span class="text-label-caps font-label-caps text-on-surface-variant">TECHNICAL LOGS &amp; METADATA</span>
+<div class="flex gap-2">
+<span class="w-2 h-2 rounded-full bg-primary-fixed animate-pulse"></span>
+<span class="text-label-caps font-label-caps text-primary-fixed">SYSTEM ACTIVE</span>
+</div>
+</div>
+<div class="flex-1 flex p-0">
+<!-- EXIF Data (Zebra Striped) -->
+<div class="w-1/3 border-r border-outline-variant overflow-y-auto">
+<div class="grid grid-cols-2 text-data-mono font-data-mono text-sm">
+<div class="p-2 text-on-surface-variant bg-surface-container-low">Camera Model</div>
+<div class="p-2 text-primary bg-surface-container-low">EOS 5D Mark IV</div>
+<div class="p-2 text-on-surface-variant bg-surface">Software</div>
+<div class="p-2 text-error bg-surface">Adobe Photoshop 24.0</div>
+<div class="p-2 text-on-surface-variant bg-surface-container-low">DateTimeOriginal</div>
+<div class="p-2 text-primary bg-surface-container-low">2023:10:24 14:32:11</div>
+<div class="p-2 text-on-surface-variant bg-surface">ColorSpace</div>
+<div class="p-2 text-primary bg-surface">sRGB</div>
+<div class="p-2 text-on-surface-variant bg-surface-container-low">Compression</div>
+<div class="p-2 text-primary bg-surface-container-low">JPEG (old-style)</div>
+</div>
+</div>
+<!-- Terminal Output -->
+<div class="flex-1 bg-surface-dim p-4 overflow-y-auto font-data-mono text-data-mono text-sm leading-relaxed">
+<div class="text-on-surface-variant">[10:42:01] Initializing ELA module... DONE</div>
+<div class="text-on-surface-variant">[10:42:02] Analyzing JPEG compression levels...</div>
+<div class="text-primary-fixed">[10:42:03] &gt; Baseline quantization table extracted.</div>
+<div class="text-warning" style="color: #ffff00;">[10:42:04] &gt; WARN: Inconsistent error levels detected in regions (x:450-520, y:210-290).</div>
+<div class="text-on-surface-variant">[10:42:05] Passing coordinates to U-Net segmenter... DONE</div>
+<div class="text-error">[10:42:08] CRITICAL: U-Net confirms manipulation boundary. Forgery score updated to 87.4%.</div>
+<div class="text-on-surface-variant flex items-center gap-2 mt-2">
+<span class="text-primary-fixed">user@forensic-node:~$</span>
+<span class="w-2 h-4 bg-primary-fixed animate-pulse inline-block"></span>
+</div>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

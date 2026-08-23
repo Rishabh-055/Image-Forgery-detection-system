@@ -1,0 +1,88 @@
+import streamlit as st
+import torch
+import cv2
+import numpy as np
+from PIL import Image
+from model import UNet
+from utils.ela_processor import calculate_ela, get_heatmap_overlay, generate_forgery_score
+from torchvision import transforms
+
+st.set_page_config(page_title="ForensicSplicing | Image Tamper Detection", layout="wide")
+
+# App Styles
+st.markdown("""
+    <style>
+    .main { background-color: #0E1117; color: #FFFFFF; }
+    .stMetric { background-color: #1A1C24; padding: 15px; border-radius: 10px; border: 1px solid #00FFFF; }
+    </style>
+    """, unsafe_allow_html=True)
+
+st.title("🔍 ForensicSplicing: Image Splicing Detection")
+st.sidebar.header("🛠 Configuration")
+
+uploaded_file = st.sidebar.file_uploader("Upload Image to Analyze", type=["jpg", "jpeg", "png"])
+mode = st.sidebar.radio("Detection Mode", ["Heuristic (ELA)", "Deep Learning (U-Net)"])
+
+if uploaded_file:
+    # Load Image
+    image = Image.open(uploaded_file).convert("RGB")
+    st.sidebar.image(image, caption="Original Image", use_column_width=True)
+    
+    if st.sidebar.button("Run Analysis"):
+        with st.spinner("Analyzing pixels for anomalies..."):
+            
+            if mode == "Heuristic (ELA)":
+                # Process ELA
+                temp_path = "temp_upload.jpg"
+                image.save(temp_path)
+                ela_img = calculate_ela(temp_path)
+                score, status = generate_forgery_score(ela_img)
+                
+                # Create Heatmap
+                mask = np.array(ela_img.convert("L"))
+                heatmap = get_heatmap_overlay(image, mask)
+                
+            else:
+                # U-Net Inference
+                model = UNet()
+                try:
+                    model.load_state_dict(torch.load("unet_splicing_model.pth", map_location=torch.device('cpu')))
+                    model.eval()
+                    
+                    # Preprocess
+                    preprocess = transforms.Compose([
+                        transforms.Resize((256, 256)),
+                        transforms.ToTensor(),
+                    ])
+                    input_tensor = preprocess(image).unsqueeze(0)
+                    
+                    with torch.no_grad():
+                        output = torch.sigmoid(model(input_tensor))
+                        mask = output.squeeze().cpu().numpy()
+                        mask = cv2.resize(mask, (image.size[0], image.size[1]))
+                    
+                    score = int(np.max(mask) * 100)
+                    status = "Spliced" if score > 50 else "Authentic"
+                    heatmap = get_heatmap_overlay(image, mask)
+                    
+                except FileNotFoundError:
+                    st.warning("U-Net weights (unet_splicing_model.pth) not found. Running ELA fallback.")
+                    # Fallback code...
+                    score, status = 0, "Weights Missing"
+                    heatmap = np.array(image)
+
+            # Results Display
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.metric(label="Forgery Confidence Score", value=f"{score}%", delta=status)
+                st.subheader("Original Image")
+                st.image(image, use_column_width=True)
+                
+            with col2:
+                st.subheader(f"Analysis Heatmap ({mode})")
+                st.image(heatmap, use_column_width=True)
+                
+            st.success(f"Analysis Complete. Result: {status}")
+else:
+    st.info("Please upload an image from the sidebar to begin forensics.")

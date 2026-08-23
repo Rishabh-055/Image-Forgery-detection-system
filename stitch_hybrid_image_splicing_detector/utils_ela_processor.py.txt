@@ -1,0 +1,66 @@
+import cv2
+import numpy as np
+from PIL import Image, ImageChops
+
+def calculate_ela(image_path, quality=90):
+    """
+    Error Level Analysis (ELA) identifies areas of an image with different 
+    compression levels. In a spliced image, the modified part often 
+    shows a higher error rate when resaved.
+    """
+    original = Image.open(image_path).convert('RGB')
+    
+    # Save at a specific quality and reload
+    resaved_path = 'temp_resaved.jpg'
+    original.save(resaved_path, 'JPEG', quality=quality)
+    resaved = Image.open(resaved_path)
+    
+    # Calculate pixel difference
+    ela_image = ImageChops.difference(original, resaved)
+    
+    # Amplify the difference (scale factor)
+    extrema = ela_image.getextrema()
+    max_diff = max([ex[1] for ex in extrema])
+    if max_diff == 0:
+        max_diff = 1
+    scale = 255.0 / max_diff
+    
+    ela_image = ImageEnhance.Brightness(ela_image).enhance(scale)
+    return ela_image
+
+def get_heatmap_overlay(original_img, mask):
+    """
+    Blends a heatmap (mask) over the original image using OpenCV's JET colormap.
+    """
+    # Convert PIL to CV2
+    img = cv2.cvtColor(np.array(original_img), cv2.COLOR_RGB2BGR)
+    
+    # Ensure mask is grayscale 0-255
+    if mask.dtype != np.uint8:
+        mask = (mask * 255).astype(np.uint8)
+        
+    # Apply JET colormap to the mask
+    heatmap = cv2.applyColorMap(mask, cv2.COLORMAP_JET)
+    
+    # Blend heatmap with original image
+    overlay = cv2.addWeighted(img, 0.7, heatmap, 0.3, 0)
+    
+    return cv2.cvtColor(overlay, cv2.COLOR_BGR2RGB)
+
+def generate_forgery_score(ela_img):
+    """
+    Simplified score generator based on ELA variance.
+    Returns score (0-100) and status string.
+    """
+    ela_data = np.array(ela_img)
+    variance = np.var(ela_data)
+    
+    # Normalizing variance to a 0-100 score (Heuristic)
+    score = min(100, int(variance / 5)) 
+    
+    if score < 20:
+        return score, "Authentic"
+    elif score < 50:
+        return score, "Suspicious"
+    else:
+        return score, "Spliced"
